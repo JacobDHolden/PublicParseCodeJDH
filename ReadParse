@@ -1,0 +1,36 @@
+#include <libxml/parser.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+/*Run using the code below.
+Will also need to install libxml2.
+ gcc `xml2-config --cflags --libs` test.c*/
+int is_leaf(xmlNode * node){
+        xmlNode * child = node->children;
+        while(child){
+                if(child->type == XML_ELEMENT_NODE) return 0;
+                child=child->next;
+        }
+        return 1
+}
+void print_xml(xmlNode * node, int indent_len){
+        while(node){
+        if(node->type == XML_ELEMENT_NODE){
+                print("%*c%s:%s\n", indent_len*2, '-', node->name, is_leaf(node)?xmlNodeGetContent(node):xmlGetProp(node, "id"));
+        }
+        print_xml(node->children, indent_len + 1);
+        node = node->next;
+}
+int main (int argc, char *argv[]) {
+        xmlDoc *doc = NULL;
+        xmlNode *root_element = NULL;
+        doc = xmlReadFile("catalog.xml", NULL, 0);
+        if(doc==NULL){
+        printf("Could not parse the XML File.");
+        }
+        root_element = xmlDocGetRootElement(doc);
+
+        print_xml(root_element, 1);
+        xmlFreeDoc(doc);
+        xmlCleanupParser();
+}
